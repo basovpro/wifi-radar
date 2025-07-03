@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Alembic прогенерирует версии сам
+backend/alembic/versions/*.pyc
