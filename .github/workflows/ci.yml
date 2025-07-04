@@ -26,13 +26,13 @@ jobs:
       - name: Apply migrations
         run: docker compose -f infra/docker-compose.yaml exec -T backend alembic upgrade head
 
-      - name: Ruff lint                           # 🔥 новый шаг
+      - name: Ruff lint
         run: docker compose -f infra/docker-compose.yaml exec -T \
-             -e PYTHONPATH=/app backend ruff check .
+             backend env PYTHONPATH=/app ruff check .
 
       - name: Run pytest
         run: docker compose -f infra/docker-compose.yaml exec -T \
-             -e PYTHONPATH=/app backend pytest -q
+             backend env PYTHONPATH=/app pytest -q
 
       - name: Tear down
         if: always()
