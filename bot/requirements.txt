@@ -1,3 +1,3 @@
-python-telegram-bot~=21.3
-pydantic~=2.7
-python-dotenv~=1.0      # будем читать .env
+python-telegram-bot==21.5         # работа с Telegram (асинхронная)
+python-dotenv==1.0.1              # читать переменные из .env
+httpx[http2]==0.27.0              # делать запросы к backend
