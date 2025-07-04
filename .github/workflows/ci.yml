@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Клонируем репозиторий
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    # 2. Ставим docker-compose-plugin (runner уже с Docker)
+    - name: Install docker-compose plugin
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y docker-compose-plugin
+
+    # 3. Собираем и поднимаем сервисы
+    - name: Build & start containers
+      run: |
+        docker compose -f infra/docker-compose.yaml up -d --build
+
+    # 4. Ждём, пока Postgres скажет «готов»
+    - name: Wait for Postgres
+      run: |
+        until docker compose -f infra/docker-compose.yaml exec -T postgres pg_isready -U radar ; do
+          echo "⏳ waiting for db…" && sleep 2
+        done
+
+    # 5. Применяем миграции
+    - name: Apply migrations
+      run: |
+        docker compose -f infra/docker-compose.yaml exec -T backend alembic upgrade head
+
+    # 6. Запускаем pytest
+    - name: Run pytest
+      run: |
+        docker compose -f infra/docker-compose.yaml exec -T backend pytest -q
+
+    # 7. Всегда выключаем контейнеры
+    - name: Tear down
+      if: always()
+      run: |
+        docker compose -f infra/docker-compose.yaml down -v
