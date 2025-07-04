@@ -11,28 +11,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
+      # 1. Клонируем репозиторий
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-    - name: Build & start containers
-      run: |
-        docker compose -f infra/docker-compose.yaml up -d --build
+      # 2. Собираем и поднимаем контейнеры
+      - name: Build & start containers
+        run: docker compose -f infra/docker-compose.yaml up -d --build
 
-    - name: Wait for Postgres
-      run: |
-        until docker compose -f infra/docker-compose.yaml exec -T postgres pg_isready -U radar ; do
-          echo "⏳ waiting for db…" && sleep 2
-        done
+      # 3. Ждём готовности Postgres
+      - name: Wait for Postgres
+        run: |
+          until docker compose -f infra/docker-compose.yaml exec -T postgres pg_isready -U radar ; do
+            echo "⏳ waiting for db…" && sleep 2
+          done
 
-    - name: Apply migrations
-      run: |
-        docker compose -f infra/docker-compose.yaml exec -T backend alembic upgrade head
+      # 4. Применяем миграции
+      - name: Apply migrations
+        run: docker compose -f infra/docker-compose.yaml exec -T backend alembic upgrade head
 
-    - name: Run pytest
-      run: docker compose -f infra/docker-compose.yaml exec -T backend \
-        sh -c "cd /app && pytest -q"
+      # 5. Запускаем pytest из каталога /app внутри контейнера
+      - name: Run pytest
+        run: docker compose -f infra/docker-compose.yaml exec -T -w /app backend pytest -q
 
-    - name: Tear down
-      if: always()
-      run: |
-        docker compose -f infra/docker-compose.yaml down -v
+      # 6. Всегда выключаем и очищаем
+      - name: Tear down
+        if: always()
+        run: docker compose -f infra/docker-compose.yaml down -v
