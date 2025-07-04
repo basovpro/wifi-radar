@@ -1,0 +1,12 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4          # версия ruff
+    hooks:
+      - id: ruff
+        args: [--fix]    # сразу исправлять то, что можно
+
+  - repo: https://github.com/psf/black
+    rev: 24.4.2          # версия black
+    hooks:
+      - id: black
+        language_version: python3.12
