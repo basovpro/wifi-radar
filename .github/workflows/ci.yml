@@ -1,35 +1,44 @@
 name: CI
+
 on:
-  push:        { branches: [main] }
-  pull_request:{ branches: [main] }
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
+      # 1. Клонируем репозиторий
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # 2. Собираем и поднимаем контейнеры
       - name: Build & start containers
         run: docker compose -f infra/docker-compose.yaml up -d --build
 
+      # 3. Ждём, пока Postgres станет готов
       - name: Wait for Postgres
         run: |
           until docker compose -f infra/docker-compose.yaml exec -T postgres pg_isready -U radar ; do
             echo "⏳ waiting for db…" && sleep 2
           done
 
+      # 4. Накатываем миграции
       - name: Apply migrations
         run: docker compose -f infra/docker-compose.yaml exec -T backend alembic upgrade head
 
-      # ---- Ruff ------------------------------------------
+      # 5. Ruff — линтинг кода
       - name: Ruff lint
         run: docker compose -f infra/docker-compose.yaml exec -T backend env PYTHONPATH=/app ruff check .
 
-      # ---- Pytest ----------------------------------------
+      # 6. Pytest — юнит-тесты
       - name: Run pytest
         run: docker compose -f infra/docker-compose.yaml exec -T backend env PYTHONPATH=/app pytest -q
 
+      # 7. Чистим за собой контейнеры
       - name: Tear down
         if: always()
         run: docker compose -f infra/docker-compose.yaml down -v
