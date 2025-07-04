@@ -30,6 +30,17 @@ services:
     command: >
       uvicorn app.main:app --host 0.0.0.0 --port 8000
 
+  telegram_bot:
+    build: ../bot
+    depends_on:
+      - backend
+    environment:
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - BACKEND_URL=${BACKEND_URL}
+    volumes:
+      - ../bot/app.py:/bot/app.py
+      - ../.env:/bot/.env:ro
+
 # ── объявление всех именованных томов ────────────
 volumes:
   pgdata:
