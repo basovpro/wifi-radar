@@ -7,3 +7,16 @@ __pycache__/
 
 # Alembic прогенерирует версии сам
 backend/alembic/versions/*.pyc
+
+# Python byte-code
+__pycache__/
+*.py[cod]
+
+# редакторские копии / резервные
+*.save
+*.swp
+*.swo
+*~           
+
+# Alembic компилирует .pyc в __pycache__
+backend/alembic/**/__pycache__/

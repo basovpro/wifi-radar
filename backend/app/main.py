@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from fastapi import FastAPI, Depends, HTTPException, Query # type: ignore
+from sqlalchemy.orm import Session # type: ignore
 
 from . import deps, schemas, crud
 

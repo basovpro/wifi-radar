@@ -15,12 +15,12 @@ from sqlalchemy import engine_from_config, pool  # type: ignore
 
 # ── 1. Добавляем backend/app в PYTHONPATH ─────────────────────────
 sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "app"))
+    os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 )
 
 # Импортируем Base и ВСЕ модели, чтобы они зарегистрировались в metadata
-from db import Base  # type: ignore  # noqa: E402
-import models        # noqa: E402,F401  (сам факт импорта достаточно)
+from app.db import Base  # type: ignore  # noqa: E402
+import app.models        # noqa: E402,F401  (сам факт импорта достаточно)
 
 # ── 2. Конфигурация и логирование ─────────────────────────────────
 config = context.config

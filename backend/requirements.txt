@@ -8,3 +8,4 @@ python-dotenv==1.0.1
 pydantic==2.7.1
 shapely==2.0.4
 
+shapely==2.0.4

@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean, SmallInteger, DateTime, func
-from geoalchemy2 import Geography
+from sqlalchemy import Column, Integer, String, Boolean, SmallInteger, DateTime, func # type: ignore
+from geoalchemy2 import Geography # type: ignore
 from .db import Base
 
 class Hotspot(Base):
