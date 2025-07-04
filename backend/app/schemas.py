@@ -1,21 +1,21 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
 
 # -------- входящая схема /ping ------------------------------------------------
 class PingIn(BaseModel):
-    device_id: str                          # UUID строки (пока как str)
-    bssid: str                              # "AA:BB:CC:DD:EE:FF"
+    device_id: str  # UUID строки (пока как str)
+    bssid: str  # "AA:BB:CC:DD:EE:FF"
     internet: bool
-    rssi: int = Field(..., ge=-100, le=0)   # -100…0 dBm
+    rssi: int = Field(..., ge=-100, le=0)  # -100…0 dBm
     lat: Optional[float] = Field(None, ge=-90, le=90)
     lon: Optional[float] = Field(None, ge=-180, le=180)
     measured_at: datetime
 
     class Config:
-        orm_mode = True        # Pydantic v1; если уже v2 — use 'from_attributes = True'
+        orm_mode = True  # Pydantic v1; если уже v2 — use 'from_attributes = True'
 
 
 # -------- исходящая схема /points --------------------------------------------
@@ -30,4 +30,4 @@ class PointOut(BaseModel):
     measured_at: datetime
 
     class Config:
-        orm_mode = True        # или_
+        orm_mode = True  # или_

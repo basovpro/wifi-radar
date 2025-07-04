@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List
 
 from geoalchemy2.functions import ST_DWithin
@@ -13,9 +12,7 @@ from . import models, schemas
 # ─────────────────────────  /ping  ──────────────────────────
 def create_ping(db: Session, p: schemas.PingIn) -> None:
     """Сохранить один пинг и при необходимости создать хот-спот."""
-    hotspot = db.query(models.Hotspot).filter(
-        models.Hotspot.bssid == p.bssid
-    ).first()
+    hotspot = db.query(models.Hotspot).filter(models.Hotspot.bssid == p.bssid).first()
 
     if hotspot is None and p.lat is not None and p.lon is not None:
         hotspot = models.Hotspot(
@@ -26,7 +23,7 @@ def create_ping(db: Session, p: schemas.PingIn) -> None:
             last_seen=p.measured_at,
         )
         db.add(hotspot)
-        db.flush()                      # получаем hotspot.id
+        db.flush()  # получаем hotspot.id
 
     db.add(
         models.Ping(
