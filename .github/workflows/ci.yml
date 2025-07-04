@@ -11,31 +11,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1 - клонируем репозиторий
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 2 - собираем и поднимаем сервисы
       - name: Build & start containers
         run: docker compose -f infra/docker-compose.yaml up -d --build
 
-      # 3 - ждём готовности Postgres
       - name: Wait for Postgres
         run: |
           until docker compose -f infra/docker-compose.yaml exec -T postgres pg_isready -U radar ; do
             echo "⏳ waiting for db…" && sleep 2
           done
 
-      # 4 - применяем миграции Alembic
       - name: Apply migrations
         run: docker compose -f infra/docker-compose.yaml exec -T backend alembic upgrade head
 
-      # 5 - запускаем pytest, объявляя PYTHONPATH=/app
       - name: Run pytest
-        run: docker compose -f infra/docker-compose.yaml exec -T \
-             -e PYTHONPATH=/app backend pytest -q
+        run: docker compose -f infra/docker-compose.yaml exec -T backend env PYTHONPATH=/app pytest -q
 
-      # 6 - всегда выключаем контейнеры и чистим тома
       - name: Tear down
         if: always()
         run: docker compose -f infra/docker-compose.yaml down -v
