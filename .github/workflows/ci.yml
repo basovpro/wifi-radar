@@ -29,10 +29,8 @@ jobs:
         docker compose -f infra/docker-compose.yaml exec -T backend alembic upgrade head
 
     - name: Run pytest
-      run: |
-        docker compose -f infra/docker-compose.yaml exec -T backend \
-          bash -c "cd /app && pytest -q"
-      
+      run: docker compose -f infra/docker-compose.yaml exec -T backend \
+        bash -c "cd /app && pytest -q"
 
     - name: Tear down
       if: always()
